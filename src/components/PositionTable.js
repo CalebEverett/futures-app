@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, CardContent, Grid } from '@material-ui/core';
 import Table from "@material-ui/core/Table";
@@ -54,24 +54,6 @@ export default function PositionTable({ priceDecimals }) {
   const classes = useStyles();
 
   const [state, dispatch] = useContext(Context);
-
-  useEffect(() => {
-    const updatePrice = (row) => {
-      row.markPrice = state.prices[row.symbol].markPrice;
-      row.markTick = state.prices[row.symbol].markTick;
-      row.spotPrice = state.prices[row.symbol].spotPrice;
-      row.spotTick = state.prices[row.symbol].spotTick;
-      row.fundingRate = state.prices[row.symbol].fundingRate;
-      row.fundingTime = state.prices[row.symbol].fundingTime;
-      row["unRealizedProfitTick"] =
-        row.unRealizedProfit > 0
-          ? classes.tickColors.uptick
-          : classes.tickColors.uptick;
-      return row;
-    };
-    const data = state.positionRows.map((row) => updatePrice(row))
-    dispatch({ type: ACTIONS.SET_POSITION_ROWS, payload: data });
-  }, [state.prices]);
 
   const notional = (row) => {
     return parseFloat(row.markPrice) * parseFloat(row.positionAmt);

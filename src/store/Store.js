@@ -65,7 +65,6 @@ const Store = ({ children }) => {
         getTradeRows();
     }, [state.openOpen, state.openClose]);
 
-
     // Price stream for position table
     async function streamPrices() {
         const add_tick = (current, prior) => {
@@ -130,6 +129,25 @@ const Store = ({ children }) => {
         streamPrices();
         streamAccountUpdates()
     }, []);
+
+    // Update position rows with price changes
+    useEffect(() => {
+        const updatePrice = (row) => {
+            row.markPrice = state.prices[row.symbol].markPrice;
+            row.markTick = state.prices[row.symbol].markTick;
+            row.spotPrice = state.prices[row.symbol].spotPrice;
+            row.spotTick = state.prices[row.symbol].spotTick;
+            row.fundingRate = state.prices[row.symbol].fundingRate;
+            row.fundingTime = state.prices[row.symbol].fundingTime;
+            // row["unRealizedProfitTick"] =
+            //     row.unRealizedProfit > 0
+            //         ? classes.tickColors.uptick
+            //         : classes.tickColors.uptick;
+            return row;
+        };
+        const data = state.positionRows.map((row) => updatePrice(row))
+        dispatch({ type: ACTIONS.SET_POSITION_ROWS, payload: data });
+    }, [state.prices]);
 
     return (
         <Context.Provider value={[state, dispatch]}>

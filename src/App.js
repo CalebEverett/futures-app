@@ -15,6 +15,7 @@ import CandleChart from "./components/CandleChart";
 import LineChart from "./components/LineChart";
 import PositionTable from "./components/PositionTable";
 import WalletTable from "./components/WalletTable";
+import TradeTable from "./components/TradeTable";
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { Context } from './store/Store'
 
@@ -85,6 +86,11 @@ export default function App() {
               title={`${state.ticker} funding rate`}
               decimals={5}
             />
+          </Grid>
+          <Grid item container>
+            <Grid item xs={12}>
+              <TradeTable />
+            </Grid>
           </Grid>
         </Grid>
       </Container>

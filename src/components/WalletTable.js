@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, CardContent, Grid } from '@material-ui/core';
 import Table from "@material-ui/core/Table";
@@ -8,7 +8,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from '@material-ui/core/Typography';
-import { ACTIONS, Context } from '../store/Store';
+import { Context } from '../store/Store';
 
 
 const useStyles = makeStyles((theme) => {
