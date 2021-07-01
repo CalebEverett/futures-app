@@ -38,6 +38,11 @@ const Reducer = (state, action) => {
                 ...state,
                 walletRows: action.payload
             };
+        case ACTIONS.SET_TRADE_ROWS:
+            return {
+                ...state,
+                tradeRows: action.payload
+            };
         case ACTIONS.SET_OPEN_AMOUNTS:
             return {
                 ...state,

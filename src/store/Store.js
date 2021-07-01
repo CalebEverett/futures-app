@@ -10,6 +10,7 @@ export const initialState = {
     positionRows: [],
     prices: {},
     walletRows: [],
+    tradeRows: [],
     openAmounts: {
         leverage: 5,
         price: 0,
@@ -25,6 +26,7 @@ export const ACTIONS = {
     SET_TICKER: 'SET_TICKER',
     SET_TICKER_ROWS: 'SET_TICKER_ROWS',
     SET_POSITION_ROWS: 'SET_POSITION_ROWS',
+    SET_TRADE_ROWS: 'SET_TRADE_ROWS',
     SET_PRICES: 'SET_PRICES',
     SET_WALLET_ROWS: 'SET_WALLET_ROWS',
     SET_CAPITAL: 'SET_CAPITAL',
@@ -43,15 +45,24 @@ const Store = ({ children }) => {
         dispatch({ type: ACTIONS.SET_POSITION_ROWS, payload: data })
     }
 
+    // Initial data for wallet table
     async function getWalletRows() {
         const response = await fetch("http://localhost:8000/wallet");
         const data = await response.json();
         dispatch({ type: ACTIONS.SET_WALLET_ROWS, payload: data });
     }
 
+    // Initial data for trades table
+    async function getTradeRows() {
+        const response = await fetch("http://localhost:8000/trades");
+        const data = await response.json();
+        dispatch({ type: ACTIONS.SET_TRADE_ROWS, payload: data });
+    }
+
     useEffect(() => {
         getPositionRows();
         getWalletRows();
+        getTradeRows();
     }, [state.openOpen, state.openClose]);
 
 
