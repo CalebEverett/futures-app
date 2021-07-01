@@ -54,24 +54,25 @@ const Store = ({ children }) => {
         getWalletRows();
     }, [state.openOpen, state.openClose]);
 
+
     // Price stream for position table
-    const add_tick = (current, prior) => {
-
-        let tick
-
-        if (current > prior) {
-            tick = theme.palette.success.main;
-        }
-
-        if (current < prior) {
-            tick = theme.palette.error.main;
-        }
-
-        return tick;
-    };
-
-
     async function streamPrices() {
+        const add_tick = (current, prior) => {
+
+            let tick
+
+            if (current > prior) {
+                tick = theme.palette.success.main;
+            }
+
+            if (current < prior) {
+                tick = theme.palette.error.main;
+            }
+
+            return tick;
+        };
+
+
         let ws = new WebSocket("ws://localhost:8000/market-stream");
         let oldPrices = {}
         ws.onmessage = (event) => {
@@ -104,7 +105,12 @@ const Store = ({ children }) => {
     async function streamAccountUpdates() {
         let ws = new WebSocket("ws://localhost:8000/user-stream");
         ws.onmessage = (event) => {
-            console.log(event.data)
+            const update = JSON.parse(event.data)
+            if (["ACCOUNT_UPDATE", "outboundAccountPosition"].indexOf(update.e) != -1) {
+                getPositionRows();
+                getWalletRows();
+                console.log("Positions and wallet updated.")
+            }
         }
         return () => ws.close()
     };
