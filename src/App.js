@@ -16,8 +16,9 @@ import LineChart from "./components/LineChart";
 import PositionTable from "./components/PositionTable";
 import WalletTable from "./components/WalletTable";
 import TradeTable from "./components/TradeTable";
+import PnLTable from "./components/PnLTable";
 import BarChartIcon from '@material-ui/icons/BarChart';
-import { Context } from './store/Store'
+import { ACTIONS, Context } from './store/Store'
 
 
 export default function App() {
@@ -37,6 +38,11 @@ export default function App() {
 
   const classes = useStyles();
 
+  const handleIntervalClick = (interval) => {
+    dispatch({ type: ACTIONS.SET_CANDLE_INTERVAL, payload: interval })
+  }
+
+
   return (
     <Fragment>
       <CssBaseline />
@@ -50,48 +56,39 @@ export default function App() {
       </AppBar>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
-          <Grid item >
+          <Grid item xs={12}>
             <Box mt={2}></Box>
           </Grid>
-          <Grid item container>
-            <Grid item>
-              <WalletTable priceDecimals={2} />
-            </Grid>
-          </Grid>
-          <Grid item container >
-            <Grid item xs={12}>
-              <PositionTable
-                priceDecimals={2}
-              />
-            </Grid>
-          </Grid>
-          <Grid item container spacing={3}>
-            <CandleChart
-              endPoint={`klines/futures/${state.ticker}`}
-              title={`${state.ticker} futures`}
-              decimals={4}
-            />
-            <CandleChart
-              endPoint={`klines/spot/${state.ticker}`}
-              title={`${state.ticker} spot`}
-              decimals={4}
-            />
-            <CandleChart
-              endPoint={`spread/${state.ticker}`}
-              title={`${state.ticker} spread`}
-              decimals={5}
-            />
-            <LineChart
-              endPoint={`funding/${state.ticker}`}
-              title={`${state.ticker} funding rate`}
-              decimals={5}
-            />
-          </Grid>
-          <Grid item container>
-            <Grid item xs={12}>
-              <TradeTable />
-            </Grid>
-          </Grid>
+          <PnLTable priceDecimals={2} />
+          <WalletTable priceDecimals={2} />
+          <PositionTable priceDecimals={2} />
+          <CandleChart
+            endPoint={`klines/futures/${state.ticker}?interval=${state.candleInterval}`}
+            title={`${state.ticker} futures`}
+            decimals={4}
+            candleInterval={state.candleInterval}
+            handleIntervalClick={handleIntervalClick}
+          />
+          <CandleChart
+            endPoint={`klines/spot/${state.ticker}?interval=${state.candleInterval}`}
+            title={`${state.ticker} spot`}
+            decimals={4}
+            candleInterval={state.candleInterval}
+            handleIntervalClick={handleIntervalClick}
+          />
+          <CandleChart
+            endPoint={`spread/${state.ticker}?interval=${state.candleInterval}`}
+            title={`${state.ticker} spread`}
+            decimals={5}
+            candleInterval={state.candleInterval}
+            handleIntervalClick={handleIntervalClick}
+          />
+          <LineChart
+            endPoint={`funding/${state.ticker}`}
+            title={`${state.ticker} funding rate`}
+            decimals={5}
+          />
+          <TradeTable />
         </Grid>
       </Container>
     </Fragment >

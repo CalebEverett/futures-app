@@ -16,6 +16,12 @@ const useStyles = makeStyles((theme) => {
     root: {
       color: theme.palette.text.secondary,
     },
+    tableCellPos: {
+      color: theme.palette.success.main
+    },
+    tableCellNeg: {
+      color: theme.palette.error.main
+    },
     tableRow: {
       "&$selected": {
         backgroundColor: theme.palette.action.selected,
@@ -32,55 +38,49 @@ const useStyles = makeStyles((theme) => {
   }
 });
 
-export default function WalletTable({ priceDecimals }) {
+export default function PnLTable({ priceDecimals }) {
 
   const classes = useStyles();
 
   const [state, dispatch] = useContext(Context);
 
-  const MemoizedWalletTable = useMemo(() => {
+  const symbols = state.pnLRows.length > 0 ? Object.keys(state.pnLRows[0]).filter(k => k != 'component') : []
+
+  const MemoizedPnLTable = useMemo(() => {
     return (
-      <Grid item>
-        <Card style={{ height: "100%" }}>
+      <Grid item >
+        <Card>
           <CardContent>
             <Typography variant="h5" color="textSecondary">
-              Wallets
+              RealizedPnL
             </Typography>
             <TableContainer >
               <Table size="small" aria-label="ticker table">
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.root}></TableCell>
-                    <TableCell align="right" className={classes.root}>
-                      Futures
-                    </TableCell>
-                    <TableCell align="right" className={classes.root}>
-                      Margin
-                    </TableCell>
-                    <TableCell align="right" className={classes.root}>
-                      Total
-                    </TableCell>
+                    {symbols.map(s => (
+                      <TableCell align="right" className={classes.root}>
+                        {s}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {state.walletRows.map((row) => (
+                  {state.pnLRows.map(row => (
                     <TableRow
-                      key={row.asset}
+                      key={row.component}
                       className={classes.tableRow}
                       hover={true}
                     >
                       <TableCell component="th" scope="row">
-                        {row.asset}
+                        {row.component}
                       </TableCell>
-                      <TableCell align="right">
-                        {parseFloat(row.futuresPositionAmt).toFixed(priceDecimals)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {parseFloat(row.marginPositionAmt).toFixed(priceDecimals)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {parseFloat(row.totalPositionAmt).toFixed(priceDecimals)}
-                      </TableCell>
+                      {symbols.map(s => (
+                        <TableCell align="right" className={parseFloat(row[s]) > 0 ? classes.tableCellPos : parseFloat(row[s]) < 0 ? classes.tableCellNeg : null}>
+                          {parseFloat(row[s]).toFixed(priceDecimals)}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -91,7 +91,7 @@ export default function WalletTable({ priceDecimals }) {
         </Card>
       </Grid>
     );
-  }, [state.walletRows])
+  }, [state.pnLRows])
 
-  return MemoizedWalletTable
+  return MemoizedPnLTable
 }

@@ -1,4 +1,7 @@
-import { Card, CardContent, Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid'
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles'
@@ -6,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 import PropTypes from 'prop-types';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { CardActionArea } from '@material-ui/core';
 
 const HEIGHT = 300;
 
@@ -118,7 +122,7 @@ const LineChart = ({ endPoint, title, decimals }) => {
 
     return (
         <Grid item xs={12} lg={6}>
-            <Card className={classes.root}>
+            <Card className={classes.root} style={{ height: "100%" }}>
                 <CardContent>
                     <Typography variant="h5" color="textSecondary">
                         {title}

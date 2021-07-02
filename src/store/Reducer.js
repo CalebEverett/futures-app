@@ -43,10 +43,20 @@ const Reducer = (state, action) => {
                 ...state,
                 tradeRows: action.payload
             };
+        case ACTIONS.SET_PNL_ROWS:
+            return {
+                ...state,
+                pnLRows: action.payload
+            };
         case ACTIONS.SET_OPEN_AMOUNTS:
             return {
                 ...state,
                 openAmounts: action.payload
+            };
+        case ACTIONS.SET_CANDLE_INTERVAL:
+            return {
+                ...state,
+                candleInterval: action.payload
             };
         default:
             return state;

@@ -11,6 +11,7 @@ export const initialState = {
     prices: {},
     walletRows: [],
     tradeRows: [],
+    pnLRows: [],
     openAmounts: {
         leverage: 5,
         price: 0,
@@ -18,6 +19,7 @@ export const initialState = {
         notional: { amount: 0, usdt: 0 },
         margin: { amount: 0, usdt: 0 }
     },
+    candleInterval: "1m"
 };
 
 export const ACTIONS = {
@@ -31,6 +33,8 @@ export const ACTIONS = {
     SET_WALLET_ROWS: 'SET_WALLET_ROWS',
     SET_CAPITAL: 'SET_CAPITAL',
     SET_OPEN_AMOUNTS: 'SET_OPEN_AMOUNTS',
+    SET_PNL_ROWS: 'SET_WALLET_ROWS',
+    SET_CANDLE_INTERVAL: 'SET_CANDLE_INTERVAL',
 }
 
 const Store = ({ children }) => {
@@ -79,6 +83,13 @@ const Store = ({ children }) => {
         dispatch({ type: ACTIONS.SET_WALLET_ROWS, payload: data });
     }
 
+    // Initial data for PnL table
+    async function getPnLRows() {
+        const response = await fetch("http://localhost:8000/trades?form=summary");
+        const data = await response.json();
+        dispatch({ type: ACTIONS.SET_PNL_ROWS, payload: data });
+    }
+
     // Initial data for trades table
     async function getTradeRows() {
         const response = await fetch("http://localhost:8000/trades");
@@ -87,11 +98,11 @@ const Store = ({ children }) => {
     }
 
     useEffect(() => {
-        getPositionRows();
-        // updateMarginEntryPrice();
         getWalletRows();
+        getPnLRows();
+        getPositionRows();
         getTradeRows();
-    }, [state.openOpen, state.openClose]);
+    }, []);
 
     // Price stream for position table
     async function streamPrices() {
@@ -130,8 +141,9 @@ const Store = ({ children }) => {
         ws.onmessage = (event) => {
             const update = JSON.parse(event.data)
             if (["ACCOUNT_UPDATE", "outboundAccountPosition"].indexOf(update.e) != -1) {
-                getPositionRows();
                 getWalletRows();
+                getPnLRows();
+                getPositionRows();
                 getTradeRows();
                 console.log("Positions, wallet and trades updated.")
             }

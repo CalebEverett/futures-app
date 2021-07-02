@@ -1,6 +1,9 @@
 import React, { useContext, useMemo } from "react";
 import { Card, CardContent, Grid } from '@material-ui/core';
-import { DataGrid } from '@material-ui/data-grid';
+import {
+    DataGrid, GridToolbarContainer,
+    GridToolbarExport,
+} from '@material-ui/data-grid';
 import Typography from '@material-ui/core/Typography';
 import { Context } from '../store/Store';
 
@@ -8,8 +11,17 @@ export default function TradeTable() {
 
     const [state, dispatch] = useContext(Context);
 
+    function CustomToolbar() {
+        return (
+            <GridToolbarContainer>
+                <GridToolbarExport />
+            </GridToolbarContainer>
+        );
+    }
+
+
     const columns = [
-        { field: "id", sortable: false, width: 50, disableColumnMenu: true },
+        { field: "id", sortable: false, width: 50, disableColumnMenu: true, hide: true },
         { field: "symbol", flex: 1, sortable: false, disableColumnMenu: false },
         {
             field: "time",
@@ -155,6 +167,9 @@ export default function TradeTable() {
                         <div style={{ height: 500, width: '100%' }}>
                             <DataGrid
                                 density="compact"
+                                components={{
+                                    Toolbar: CustomToolbar,
+                                }}
                                 rows={state.tradeRows}
                                 columns={columns}
                             />

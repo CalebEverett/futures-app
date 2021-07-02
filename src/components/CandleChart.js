@@ -1,4 +1,10 @@
-import { Card, CardContent, Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid'
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import { ACTIONS, Context } from '../store/Store';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles'
@@ -14,7 +20,7 @@ const useStyles = makeStyles({
     }
 });
 
-const CandleChart = ({ endPoint, title, decimals }) => {
+const CandleChart = ({ endPoint, title, decimals, candleInterval, handleIntervalClick }) => {
     // https://github.com/tradingview/lightweight-charts/blob/master/docs/customization.md
 
     const classes = useStyles();
@@ -151,6 +157,8 @@ const CandleChart = ({ endPoint, title, decimals }) => {
         };
     }, []);
 
+    const intervalButtons = ["1m", "15m", "1h", "12h", "1d"]
+
     return (
         <Grid item xs={12} lg={6}>
             <Card className={classes.root}>
@@ -160,6 +168,13 @@ const CandleChart = ({ endPoint, title, decimals }) => {
                     </Typography>
                     <div ref={elRef} style={{ 'position': 'relative', 'width': '100%' }}></div>
                 </CardContent>
+                <CardActions>
+                    {intervalButtons.map(interval => (
+                        <Button variant={interval == candleInterval ? "outlined" : "text"} onClick={() => handleIntervalClick(interval)}>
+                            {interval}
+                        </Button>
+                    ))}
+                </CardActions>
             </Card>
         </Grid>
     );
