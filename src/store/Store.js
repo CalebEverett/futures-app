@@ -37,11 +37,38 @@ const Store = ({ children }) => {
     const [state, dispatch] = useReducer(Reducer, initialState);
     const theme = useTheme()
 
+    const add_tick = (current, prior) => {
+
+        let tick
+
+        if (current > prior) {
+            tick = theme.palette.success.main;
+        }
+
+        if (current < prior) {
+            tick = theme.palette.error.main;
+        }
+
+        return tick;
+    };
+
 
     // Initial data for position table
     async function getPositionRows() {
         const response = await fetch("http://localhost:8000/account");
         const data = await response.json();
+
+        const responseDos = await fetch("http://localhost:8000/trades?form=last");
+        const dataDos = await responseDos.json();
+        const entryPrices = {}
+        dataDos.forEach(openPos => entryPrices[openPos.symbol] = openPos.priceMargin)
+
+        data.forEach(row => {
+            if (row.positionAmt != 0) {
+                row.marginEntryPrice = entryPrices[row.symbol]
+            }
+        })
+
         dispatch({ type: ACTIONS.SET_POSITION_ROWS, payload: data })
     }
 
@@ -61,27 +88,13 @@ const Store = ({ children }) => {
 
     useEffect(() => {
         getPositionRows();
+        // updateMarginEntryPrice();
         getWalletRows();
         getTradeRows();
     }, [state.openOpen, state.openClose]);
 
     // Price stream for position table
     async function streamPrices() {
-        const add_tick = (current, prior) => {
-
-            let tick
-
-            if (current > prior) {
-                tick = theme.palette.success.main;
-            }
-
-            if (current < prior) {
-                tick = theme.palette.error.main;
-            }
-
-            return tick;
-        };
-
 
         let ws = new WebSocket("ws://localhost:8000/market-stream");
         let oldPrices = {}
@@ -119,7 +132,8 @@ const Store = ({ children }) => {
             if (["ACCOUNT_UPDATE", "outboundAccountPosition"].indexOf(update.e) != -1) {
                 getPositionRows();
                 getWalletRows();
-                console.log("Positions and wallet updated.")
+                getTradeRows();
+                console.log("Positions, wallet and trades updated.")
             }
         }
         return () => ws.close()
@@ -133,16 +147,35 @@ const Store = ({ children }) => {
     // Update position rows with price changes
     useEffect(() => {
         const updatePrice = (row) => {
+            const notional = (price, positionAmt) => {
+                return parseFloat(price) * parseFloat(positionAmt);
+            };
+
+            const unRealizedProfit = (price, entryPrice, positionAmt) => {
+                return notional(price, positionAmt) - notional(entryPrice, positionAmt);
+            };
+
+            const margin = (price, entryPrice, positionAmt, leverage) => {
+                return -notional(entryPrice, positionAmt) / leverage + unRealizedProfit(price, entryPrice, positionAmt);
+            };
+
             row.markPrice = state.prices[row.symbol].markPrice;
             row.markTick = state.prices[row.symbol].markTick;
             row.spotPrice = state.prices[row.symbol].spotPrice;
             row.spotTick = state.prices[row.symbol].spotTick;
             row.fundingRate = state.prices[row.symbol].fundingRate;
             row.fundingTime = state.prices[row.symbol].fundingTime;
-            // row["unRealizedProfitTick"] =
-            //     row.unRealizedProfit > 0
-            //         ? classes.tickColors.uptick
-            //         : classes.tickColors.uptick;
+
+            row.notional = notional(row.markPrice, row.positionAmt)
+            row.marginNotional = notional(row.spotPrice, row.marginPositionAmt)
+            row.margin = margin(row.markPrice, row.entryPrice, row.positionAmt, row.leverage)
+            row.unRealizedProfit = unRealizedProfit(row.markPrice, row.entryPrice, row.positionAmt)
+            row.unRealizedProfitTick = add_tick(row.unRealizedProfit, 0)
+            row.marginUnRealizedProfit = unRealizedProfit(row.spotPrice, row.marginEntryPrice, row.marginPositionAmt)
+            row.marginUnRealizedProfitTick = add_tick(row.marginUnRealizedProfit, 0)
+            row.totalUnRealizedProfit = parseFloat(row.unRealizedProfit) + parseFloat(row.marginUnRealizedProfit)
+            row.totalUnRealizedProfitTick = add_tick(row.totalUnRealizedProfit, 0)
+
             return row;
         };
         const data = state.positionRows.map((row) => updatePrice(row))

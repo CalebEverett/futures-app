@@ -27,7 +27,9 @@ const useStyles = makeStyles((theme) => {
     },
     headerTableCell: {
       border: "none",
-      width: "5px",
+      width: "10px",
+      paddingRight: "0px",
+      paddingLeft: "0px",
     },
     selected: {},
     tickColors: {
@@ -54,26 +56,6 @@ export default function PositionTable({ priceDecimals }) {
   const classes = useStyles();
 
   const [state, dispatch] = useContext(Context);
-
-  const notional = (row) => {
-    return parseFloat(row.markPrice) * parseFloat(row.positionAmt);
-  };
-
-  const spotNotional = (row) => {
-    return parseFloat(row.spotPrice) * parseFloat(row.marginPositionAmt);
-  };
-
-  const entryNotional = (row) => {
-    return parseFloat(row.entryPrice) * parseFloat(row.positionAmt);
-  };
-
-  const unRealizedProfit = (row) => {
-    return notional(row) - entryNotional(row);
-  };
-
-  const margin = (row) => {
-    return -entryNotional(row) / row.leverage + unRealizedProfit(row);
-  };
 
   const onTickerClick = (ticker) => {
     dispatch({ type: ACTIONS.SET_TICKER, payload: ticker });
@@ -111,7 +93,7 @@ export default function PositionTable({ priceDecimals }) {
                     <TableCell className={classes.root}></TableCell>
                     <TableCell className={classes.root}></TableCell>
                     <TableCell className={classes.root} align="right">
-                      Unrealized
+                      Unreal.
                       <br />
                       PnL
                     </TableCell>
@@ -132,7 +114,7 @@ export default function PositionTable({ priceDecimals }) {
                       Price
                     </TableCell>
                     <TableCell align="right" className={classes.root}>
-                      Liquidation
+                      Liquid.
                       <br />
                       Price
                     </TableCell>
@@ -158,7 +140,7 @@ export default function PositionTable({ priceDecimals }) {
                       Margin
                     </TableCell>
                     <TableCell align="right" className={classes.root}>
-                      Unrealized
+                      Unreal.
                       <br />
                       PnL
                     </TableCell>
@@ -184,7 +166,7 @@ export default function PositionTable({ priceDecimals }) {
                       Value
                     </TableCell>
                     <TableCell align="right" className={classes.root}>
-                      Unrealized
+                      Unreal.
                       <br />
                       PnL
                     </TableCell>
@@ -206,11 +188,13 @@ export default function PositionTable({ priceDecimals }) {
                       <TableCell>
                         <TradeButton row={row} />
                       </TableCell>
-                      <TableCell align="right">0.0</TableCell>
-                      <TableCell align="right">{(margin(row) + spotNotional(row)).toFixed(priceDecimals)}</TableCell>
+                      <TableCell style={{ color: row.totalUnRealizedProfitTick }} align="right">{
+                        parseFloat(row.totalUnRealizedProfit).toFixed(priceDecimals)
+                      }</TableCell>
+                      <TableCell align="right">{(row.margin + row.marginNotional).toFixed(priceDecimals)}</TableCell>
                       <TableCell></TableCell>
                       <TableCell align="right">
-                        {parseFloat(row.positionAmt).toFixed(4)}
+                        {parseFloat(row.positionAmt).toFixed(3)}
                       </TableCell>
                       <TableCell align="right">
                         {parseFloat(row.entryPrice).toFixed(priceDecimals)}
@@ -226,21 +210,24 @@ export default function PositionTable({ priceDecimals }) {
                       </TableCell>
                       <TableCell align="right">{getTimeToFunding(row.fundingTime)}</TableCell>
                       <TableCell align="right">
-                        {notional(row).toFixed(priceDecimals)}
+                        {row.notional.toFixed(priceDecimals)}
                       </TableCell>
                       <TableCell align="right">
-                        {margin(row).toFixed(priceDecimals)}
+                        {row.margin.toFixed(priceDecimals)}
                       </TableCell>
                       <TableCell style={{ color: row.unRealizedProfitTick }} align="right">
-                        {unRealizedProfit(row).toFixed(priceDecimals)}
+                        {parseFloat(row.unRealizedProfit).toFixed(priceDecimals)}
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell align="right">
-                        {parseFloat(row.marginPositionAmt).toFixed(4)}
+                        {parseFloat(row.marginPositionAmt).toFixed(3)}
                       </TableCell>
-                      <TableCell align="right">Two</TableCell>
+                      <TableCell align="right">{parseFloat(row.marginEntryPrice).toFixed(priceDecimals)}</TableCell>
                       <TableCell style={{ color: row.spotTick }} align="right">{parseFloat(row.spotPrice).toFixed(priceDecimals)}</TableCell>
-                      <TableCell align="right">{spotNotional(row).toFixed(priceDecimals)}</TableCell>
+                      <TableCell align="right">{row.marginNotional.toFixed(priceDecimals)}</TableCell>
+                      <TableCell style={{ color: row.marginUnRealizedProfitTick }} align="right">
+                        {parseFloat(row.marginUnRealizedProfit).toFixed(priceDecimals)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
