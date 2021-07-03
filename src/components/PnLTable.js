@@ -60,7 +60,7 @@ export default function PnLTable({ priceDecimals }) {
                   <TableRow>
                     <TableCell className={classes.root}></TableCell>
                     {symbols.map(s => (
-                      <TableCell align="right" className={classes.root}>
+                      <TableCell key={s} align="right" className={classes.root}>
                         {s}
                       </TableCell>
                     ))}
@@ -77,7 +77,7 @@ export default function PnLTable({ priceDecimals }) {
                         {row.component}
                       </TableCell>
                       {symbols.map(s => (
-                        <TableCell align="right" className={parseFloat(row[s]) > 0 ? classes.tableCellPos : parseFloat(row[s]) < 0 ? classes.tableCellNeg : null}>
+                        <TableCell key={s} align="right" className={parseFloat(row[s]) > 0 ? classes.tableCellPos : parseFloat(row[s]) < 0 ? classes.tableCellNeg : null}>
                           {parseFloat(row[s]).toFixed(priceDecimals)}
                         </TableCell>
                       ))}

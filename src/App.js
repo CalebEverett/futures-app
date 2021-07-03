@@ -42,6 +42,10 @@ export default function App() {
     dispatch({ type: ACTIONS.SET_CANDLE_INTERVAL, payload: interval })
   }
 
+  const setTimeRange = (timeRange) => {
+    dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: timeRange })
+  }
+
 
   return (
     <Fragment>
@@ -59,8 +63,8 @@ export default function App() {
           <Grid item xs={12}>
             <Box mt={2}></Box>
           </Grid>
-          <PnLTable priceDecimals={2} />
           <WalletTable priceDecimals={2} />
+          <PnLTable priceDecimals={2} />
           <PositionTable priceDecimals={2} />
           <CandleChart
             endPoint={`klines/futures/${state.ticker}?interval=${state.candleInterval}`}
@@ -68,6 +72,8 @@ export default function App() {
             decimals={4}
             candleInterval={state.candleInterval}
             handleIntervalClick={handleIntervalClick}
+            setTimeRange={setTimeRange}
+            timeRange={state.timeRange}
           />
           <CandleChart
             endPoint={`klines/spot/${state.ticker}?interval=${state.candleInterval}`}
@@ -75,6 +81,8 @@ export default function App() {
             decimals={4}
             candleInterval={state.candleInterval}
             handleIntervalClick={handleIntervalClick}
+            setTimeRange={setTimeRange}
+            timeRange={state.timeRange}
           />
           <CandleChart
             endPoint={`spread/${state.ticker}?interval=${state.candleInterval}`}
@@ -82,6 +90,8 @@ export default function App() {
             decimals={5}
             candleInterval={state.candleInterval}
             handleIntervalClick={handleIntervalClick}
+            setTimeRange={setTimeRange}
+            timeRange={state.timeRange}
           />
           <LineChart
             endPoint={`funding/${state.ticker}`}

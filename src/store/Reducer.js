@@ -58,6 +58,12 @@ const Reducer = (state, action) => {
                 ...state,
                 candleInterval: action.payload
             };
+        case ACTIONS.SET_TIME_RANGE:
+            return {
+                ...state,
+                timeRange: action.payload
+            };
+
         default:
             return state;
     }

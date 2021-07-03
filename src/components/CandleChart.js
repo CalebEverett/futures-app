@@ -3,14 +3,16 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import { ACTIONS, Context } from '../store/Store';
-
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles'
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { createChart } from 'lightweight-charts';
 import PropTypes from 'prop-types';
+import isEmpty from 'lodash/isEmpty'
+import { ACTIONS, Context } from '../store/Store'
+import debounce from 'lodash/debounce'
+
 
 const HEIGHT = 300;
 
@@ -20,8 +22,10 @@ const useStyles = makeStyles({
     }
 });
 
-const CandleChart = ({ endPoint, title, decimals, candleInterval, handleIntervalClick }) => {
+const CandleChart = ({ endPoint, title, decimals, candleInterval, handleIntervalClick, setTimeRange, timeRange }) => {
     // https://github.com/tradingview/lightweight-charts/blob/master/docs/customization.md
+
+    const [state, dispatch] = useContext(Context);
 
     const classes = useStyles();
     const elRef = useRef();
@@ -135,17 +139,37 @@ const CandleChart = ({ endPoint, title, decimals, candleInterval, handleInterval
 
         volumeSeriesRef.current.setData(initVolumes);
 
+        function onVisibleTimeRangeChanged(newVisibleTimeRange) {
+            setTimeRange(newVisibleTimeRange);
+        }
+
+        chartRef.current.timeScale().subscribeVisibleTimeRangeChange(onVisibleTimeRangeChanged);
+
         return () => chartRef.current.remove()
 
     }, [initCandles, initVolumes]);
 
     useEffect(() => {
-        if (!(lastCandle && Object.keys(lastCandle).length === 0 && lastCandle.constructor === Object)) {
+        if (!isEmpty(lastCandle)) {
             candlestickSeriesRef.current.update(lastCandle);
             volumeSeriesRef.current.update({ time: lastCandle.time, value: lastCandle.volume });
         }
 
     }, [lastCandle]);
+
+    useEffect(
+        () => {
+            const handler = setTimeout(() => {
+                if (!isEmpty(state.timeRange)) {
+                    chartRef.current.timeScale().setVisibleRange(state.timeRange)
+                };
+            }, 200);
+            return () => {
+                clearTimeout(handler);
+            };
+        },
+        [state.timeRange]
+    );
 
     useEffect(() => {
         const handler = () => {

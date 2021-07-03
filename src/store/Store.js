@@ -19,7 +19,8 @@ export const initialState = {
         notional: { amount: 0, usdt: 0 },
         margin: { amount: 0, usdt: 0 }
     },
-    candleInterval: "1m"
+    candleInterval: "1m",
+    timeRange: {}
 };
 
 export const ACTIONS = {
@@ -33,8 +34,9 @@ export const ACTIONS = {
     SET_WALLET_ROWS: 'SET_WALLET_ROWS',
     SET_CAPITAL: 'SET_CAPITAL',
     SET_OPEN_AMOUNTS: 'SET_OPEN_AMOUNTS',
-    SET_PNL_ROWS: 'SET_WALLET_ROWS',
+    SET_PNL_ROWS: 'SET_PNL_ROWS',
     SET_CANDLE_INTERVAL: 'SET_CANDLE_INTERVAL',
+    SET_TIME_RANGE: 'SET_TIME_RANGE',
 }
 
 const Store = ({ children }) => {
