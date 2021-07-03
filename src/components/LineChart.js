@@ -1,15 +1,15 @@
 import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles'
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { createChart } from 'lightweight-charts';
 import PropTypes from 'prop-types';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { CardActionArea } from '@material-ui/core';
+import isEmpty from 'lodash/isEmpty'
+import { ACTIONS, Context } from '../store/Store'
 
 const HEIGHT = 300;
 
@@ -21,6 +21,9 @@ const useStyles = makeStyles({
 
 const LineChart = ({ endPoint, title, decimals }) => {
     // https://github.com/tradingview/lightweight-charts/blob/master/docs/customization.md
+
+
+    const [state, dispatch] = useContext(Context);
 
     const classes = useStyles();
     const elRef = useRef();
@@ -106,6 +109,12 @@ const LineChart = ({ endPoint, title, decimals }) => {
 
         lineSeriesRef.current.setData(lines);
 
+        function onVisibleTimeRangeChanged(newVisibleTimeRange) {
+            dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: newVisibleTimeRange })
+        }
+
+        chartRef.current.timeScale().subscribeVisibleTimeRangeChange(onVisibleTimeRangeChanged);
+
         return () => chartRef.current.remove()
 
     }, [lines]);
@@ -119,6 +128,20 @@ const LineChart = ({ endPoint, title, decimals }) => {
             window.removeEventListener('resize', handler);
         };
     }, []);
+
+    useEffect(
+        () => {
+            const handler = setTimeout(() => {
+                if (!isEmpty(state.timeRange)) {
+                    chartRef.current.timeScale().setVisibleRange(state.timeRange)
+                };
+            }, 200);
+            return () => {
+                clearTimeout(handler);
+            };
+        },
+        [state.timeRange]
+    );
 
     return (
         <Grid item xs={12} lg={6}>

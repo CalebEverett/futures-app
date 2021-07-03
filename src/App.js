@@ -19,6 +19,7 @@ import TradeTable from "./components/TradeTable";
 import PnLTable from "./components/PnLTable";
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { ACTIONS, Context } from './store/Store'
+import { FolderSpecial } from "@material-ui/icons";
 
 
 export default function App() {
@@ -38,14 +39,11 @@ export default function App() {
 
   const classes = useStyles();
 
-  const handleIntervalClick = (interval) => {
-    dispatch({ type: ACTIONS.SET_CANDLE_INTERVAL, payload: interval })
-  }
-
-  const setTimeRange = (timeRange) => {
-    dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: timeRange })
-  }
-
+  const candleChartSpecs = [
+    { data: "futures", decimals: 4 },
+    { data: "spot", decimals: 4 },
+    { data: "spread", decimals: 5 },
+  ]
 
   return (
     <Fragment>
@@ -66,33 +64,12 @@ export default function App() {
           <WalletTable priceDecimals={2} />
           <PnLTable priceDecimals={2} />
           <PositionTable priceDecimals={2} />
-          <CandleChart
-            endPoint={`klines/futures/${state.ticker}?interval=${state.candleInterval}`}
-            title={`${state.ticker} futures`}
-            decimals={4}
-            candleInterval={state.candleInterval}
-            handleIntervalClick={handleIntervalClick}
-            setTimeRange={setTimeRange}
-            timeRange={state.timeRange}
-          />
-          <CandleChart
-            endPoint={`klines/spot/${state.ticker}?interval=${state.candleInterval}`}
-            title={`${state.ticker} spot`}
-            decimals={4}
-            candleInterval={state.candleInterval}
-            handleIntervalClick={handleIntervalClick}
-            setTimeRange={setTimeRange}
-            timeRange={state.timeRange}
-          />
-          <CandleChart
-            endPoint={`spread/${state.ticker}?interval=${state.candleInterval}`}
-            title={`${state.ticker} spread`}
-            decimals={5}
-            candleInterval={state.candleInterval}
-            handleIntervalClick={handleIntervalClick}
-            setTimeRange={setTimeRange}
-            timeRange={state.timeRange}
-          />
+          {candleChartSpecs.map(spec => (
+            <CandleChart
+              data={spec.data}
+              decimals={spec.decimals}
+            />
+          ))}
           <LineChart
             endPoint={`funding/${state.ticker}`}
             title={`${state.ticker} funding rate`}

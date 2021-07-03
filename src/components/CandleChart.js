@@ -11,7 +11,6 @@ import { createChart } from 'lightweight-charts';
 import PropTypes from 'prop-types';
 import isEmpty from 'lodash/isEmpty'
 import { ACTIONS, Context } from '../store/Store'
-import debounce from 'lodash/debounce'
 
 
 const HEIGHT = 300;
@@ -22,7 +21,7 @@ const useStyles = makeStyles({
     }
 });
 
-const CandleChart = ({ endPoint, title, decimals, candleInterval, handleIntervalClick, setTimeRange, timeRange }) => {
+const CandleChart = ({ data, decimals }) => {
     // https://github.com/tradingview/lightweight-charts/blob/master/docs/customization.md
 
     const [state, dispatch] = useContext(Context);
@@ -36,6 +35,8 @@ const CandleChart = ({ endPoint, title, decimals, candleInterval, handleInterval
     const [initVolumes, setInitVolumes] = useState([])
     const [lastCandle, setLastCandle] = useState({})
     const theme = useTheme();
+
+    const endPoint = `klines/${data}/${state.ticker}?interval=${state.candleInterval}`
 
     useEffect(() => {
         const apiUrl = `http://localhost:8000/${endPoint}`
@@ -140,7 +141,7 @@ const CandleChart = ({ endPoint, title, decimals, candleInterval, handleInterval
         volumeSeriesRef.current.setData(initVolumes);
 
         function onVisibleTimeRangeChanged(newVisibleTimeRange) {
-            setTimeRange(newVisibleTimeRange);
+            dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: newVisibleTimeRange })
         }
 
         chartRef.current.timeScale().subscribeVisibleTimeRangeChange(onVisibleTimeRangeChanged);
@@ -183,18 +184,22 @@ const CandleChart = ({ endPoint, title, decimals, candleInterval, handleInterval
 
     const intervalButtons = ["1m", "15m", "1h", "12h", "1d"]
 
+    const handleIntervalClick = (interval) => {
+        dispatch({ type: ACTIONS.SET_CANDLE_INTERVAL, payload: interval })
+    }
+
     return (
         <Grid item xs={12} lg={6}>
             <Card className={classes.root}>
                 <CardContent>
                     <Typography variant="h5" color="textSecondary">
-                        {title}
+                        {state.ticker} {data}
                     </Typography>
                     <div ref={elRef} style={{ 'position': 'relative', 'width': '100%' }}></div>
                 </CardContent>
                 <CardActions>
                     {intervalButtons.map(interval => (
-                        <Button variant={interval == candleInterval ? "outlined" : "text"} onClick={() => handleIntervalClick(interval)}>
+                        <Button variant={interval == state.candleInterval ? "outlined" : "text"} onClick={() => handleIntervalClick(interval)}>
                             {interval}
                         </Button>
                     ))}
