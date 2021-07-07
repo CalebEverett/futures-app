@@ -55,9 +55,15 @@ Clicking on the red "CLOSE" button bring up a simple confirmation dialog box. Cl
 
 ### Charts
 
+![Charts](public/charts.png)
+
 Includes candlestick charts for each of the futures and spot prices as well as the spread between the two. Updates every second from websocket endpoints. The mouse wheel and clicking and dragging control the scale. The buttons at the bottom determine the interval of the candlesticks, ranging from one minute to one day. Changes in time scale are debounced and then applied to all of the charts to keep them in sync.
 
+There is also a chart for funding rates that works the same way. This chart is not updated on a real time basis since funding rates update only every eight hours.
+
 ### Trades
+
+![Trades](public/trades.png)
 
 The trades table includes one row for each pair of trades to open or close a position, including time, side, quantity, price, quote quantity (USDT value of trade), commission and realized profit and loss, with Futures or Margin appended to the column label to indicate market.
 
