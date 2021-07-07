@@ -42,9 +42,9 @@ export default function PnLTable({ priceDecimals }) {
 
   const classes = useStyles();
 
-  const [state, dispatch] = useContext(Context);
+  const [state] = useContext(Context);
 
-  const symbols = state.pnLRows.length > 0 ? Object.keys(state.pnLRows[0]).filter(k => k != 'component') : []
+  const symbols = state.pnLRows.length > 0 ? Object.keys(state.pnLRows[0]).filter(k => k !== 'component') : []
 
   const MemoizedPnLTable = useMemo(() => {
     return (

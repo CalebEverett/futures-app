@@ -9,7 +9,7 @@ import { Context } from '../store/Store';
 
 export default function TradeTable() {
 
-    const [state, dispatch] = useContext(Context);
+    const [state] = useContext(Context);
 
     function CustomToolbar() {
         return (

@@ -109,11 +109,11 @@ const LineChart = ({ endPoint, title, decimals }) => {
 
         lineSeriesRef.current.setData(lines);
 
-        function onVisibleTimeRangeChanged(newVisibleTimeRange) {
-            dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: newVisibleTimeRange })
-        }
+        // function onVisibleTimeRangeChanged(newVisibleTimeRange) {
+        //     dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: newVisibleTimeRange })
+        // }
 
-        chartRef.current.timeScale().subscribeVisibleTimeRangeChange(onVisibleTimeRangeChanged);
+        // chartRef.current.timeScale().subscribeVisibleTimeRangeChange(onVisibleTimeRangeChanged);
 
         return () => chartRef.current.remove()
 
@@ -131,14 +131,16 @@ const LineChart = ({ endPoint, title, decimals }) => {
 
     useEffect(
         () => {
-            const handler = setTimeout(() => {
-                if (!isEmpty(state.timeRange)) {
+            if (!isEmpty(state.timeRange)) {
+                const handler = setTimeout(() => {
+
                     chartRef.current.timeScale().setVisibleRange(state.timeRange)
+
+                }, 200);
+                return () => {
+                    clearTimeout(handler);
                 };
-            }, 200);
-            return () => {
-                clearTimeout(handler);
-            };
+            }
         },
         [state.timeRange]
     );

@@ -18,13 +18,12 @@ import WalletTable from "./components/WalletTable";
 import TradeTable from "./components/TradeTable";
 import PnLTable from "./components/PnLTable";
 import BarChartIcon from '@material-ui/icons/BarChart';
-import { ACTIONS, Context } from './store/Store'
-import { FolderSpecial } from "@material-ui/icons";
+import { Context } from './store/Store'
 
 
 export default function App() {
 
-  const [state, dispatch] = useContext(Context);
+  const [state] = useContext(Context);
 
   const useStyles = makeStyles((theme) => {
     return {

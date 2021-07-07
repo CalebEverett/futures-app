@@ -49,15 +49,13 @@ const CandleChart = ({ data, decimals }) => {
         };
 
         getInitCandles();
-    }
-        , [endPoint]);
 
-    useEffect(() => {
         let ws = new WebSocket(`ws://localhost:8000/${endPoint}`)
         ws.onmessage = (event) => {
             setLastCandle(JSON.parse(event.data))
         };
         return () => ws.close()
+
     }
         , [endPoint]);
 
@@ -139,6 +137,7 @@ const CandleChart = ({ data, decimals }) => {
         });
 
         volumeSeriesRef.current.setData(initVolumes);
+        dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: chartRef.current.timeScale().getVisibleRange() })
 
         function onVisibleTimeRangeChanged(newVisibleTimeRange) {
             dispatch({ type: ACTIONS.SET_TIME_RANGE, payload: newVisibleTimeRange })
@@ -160,14 +159,16 @@ const CandleChart = ({ data, decimals }) => {
 
     useEffect(
         () => {
-            const handler = setTimeout(() => {
-                if (!isEmpty(state.timeRange)) {
+            if (!isEmpty(state.timeRange)) {
+                const handler = setTimeout(() => {
+
                     chartRef.current.timeScale().setVisibleRange(state.timeRange)
+
+                }, 200);
+                return () => {
+                    clearTimeout(handler);
                 };
-            }, 200);
-            return () => {
-                clearTimeout(handler);
-            };
+            }
         },
         [state.timeRange]
     );
@@ -199,7 +200,7 @@ const CandleChart = ({ data, decimals }) => {
                 </CardContent>
                 <CardActions>
                     {intervalButtons.map(interval => (
-                        <Button variant={interval == state.candleInterval ? "outlined" : "text"} onClick={() => handleIntervalClick(interval)}>
+                        <Button variant={interval === state.candleInterval ? "outlined" : "text"} onClick={() => handleIntervalClick(interval)}>
                             {interval}
                         </Button>
                     ))}

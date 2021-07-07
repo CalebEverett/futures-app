@@ -16,7 +16,7 @@ import { isEmpty } from "lodash";
 export const TradeButton = ({ row }) => {
     const theme = useTheme();
 
-    const [state, dispatch] = useContext(Context);
+    const [, dispatch] = useContext(Context);
 
     const openPosition = (Math.abs(parseFloat(row.positionAmt)) + Math.abs(parseFloat(row.marginPositionAmt))) > 0.00001
 
@@ -60,7 +60,7 @@ export const TradeAction = () => {
         const closeHandleOK = () => {
             dispatch({ type: ACTIONS.SET_CLOSE_OPEN, payload: false });
 
-            const row = state.positionRows.filter(row => row.symbol == state.ticker)[0];
+            const row = state.positionRows.filter(row => row.symbol === state.ticker)[0];
 
             const positions = {
                 symbol: row.symbol,

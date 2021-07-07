@@ -31,7 +31,7 @@ export default function TickerTable({
   });
   const classes = useStyles();
 
-  const [state, dispatch] = useContext(Context);
+  const [state] = useContext(Context);
 
   const onTickerClick = (ticker) => {
     dispatch({ type: ACTIONS.SET_TICKER, payload: ticker });

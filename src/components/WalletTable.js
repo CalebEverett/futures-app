@@ -36,7 +36,7 @@ export default function WalletTable({ priceDecimals }) {
 
   const classes = useStyles();
 
-  const [state, dispatch] = useContext(Context);
+  const [state,] = useContext(Context);
 
   const MemoizedWalletTable = useMemo(() => {
     return (

@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useEffect, useMemo } from "react";
+import React, { createContext, useReducer, useEffect } from "react";
 import Reducer from './Reducer'
 import { useTheme } from '@material-ui/core/styles';
 
@@ -70,7 +70,7 @@ const Store = ({ children }) => {
         dataDos.forEach(openPos => entryPrices[openPos.symbol] = openPos.priceMargin)
 
         data.forEach(row => {
-            if (row.positionAmt != 0) {
+            if (row.positionAmt !== 0) {
                 row.marginEntryPrice = entryPrices[row.symbol]
             }
         })
@@ -142,7 +142,7 @@ const Store = ({ children }) => {
         let ws = new WebSocket("ws://localhost:8000/user-stream");
         ws.onmessage = (event) => {
             const update = JSON.parse(event.data)
-            if (["ACCOUNT_UPDATE", "outboundAccountPosition"].indexOf(update.e) != -1) {
+            if (["ACCOUNT_UPDATE", "outboundAccountPosition"].indexOf(update.e) !== -1) {
                 getWalletRows();
                 getPnLRows();
                 getPositionRows();
